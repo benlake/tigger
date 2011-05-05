@@ -1,22 +1,42 @@
-#!/usr/bin/env php
 <?php
+/**
+ * Tigger, a PHP vTiger cli tool for tracking tickets and entering time
+ * @author Ben Lake <me@benlake.org>
+ * @license GNU Public License v3 (http://opensource.org/licenses/gpl-3.0.html)
+ * @copyright Copyright (c) 2011, Ben Lake
+ * @link https://github.com/benlake/tigger
+ *
+ * This file is part of the Tigger project.
+ *
+ * Tigger is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Tigger is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Tigger.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 //
 // Hard defaults
 //
-// PHP > 5.2 or or something requires a applications to declare a timezone
-date_default_timezone_set('America/Chicago');
-// if a host is not found in the conf or --host argument, use this
-define('DEFAULT_HOST', 'vtiger.speedfc.com');
+error_reporting(E_ERROR);
+ini_set('display_errors', 1);
 
+// libs
 set_include_path('./lib:'.get_include_path());
-require_once 'lib/share/CliInput.php';
-require_once 'lib/share/Getopt.php';
-require_once 'lib/share/Console_Table.php';
-require_once 'lib/share/Console_Color.php';
+require_once 'share/CliInput.php';
+require_once 'share/Getopt.php';
+require_once 'share/Console_Table.php';
+require_once 'share/Console_Color.php';
 // models
-require_once 'lib/model/TroubleTicket.php';
-require_once 'lib/model/Account.php';
+require_once 'model/TroubleTicket.php';
+require_once 'model/Account.php';
 
 Tigger::init();
 
@@ -667,7 +687,7 @@ class Tigger
                 'help|h'        => 'Print option help',
                 'debug|d'       => 'Enable debug output',
                 'no-transmit|z' => 'Disable communication with vTiger server',
-                'no-storage|x'  => 'Disable use of SQLite for maintinaing local state'
+                'no-storage|x'  => 'Disable use of SQLite for maintaining local state'
             ));
             self::$opts->parse();
 
@@ -707,7 +727,10 @@ class Tigger
         elseif (Conf::get('login/host'))
             $host = Conf::get('login/host');
         else
-            $host = DEFAULT_HOST;
+        {
+            print "[EE] No host defined! Use option --host or config.\n";
+            exit(4);
+        }
 
         // check for protocal
         if (preg_match('/(https?):\/\/(.*)/i', $host, $m) == 1)
@@ -725,7 +748,7 @@ class Tigger
         // version
         if (version_compare(PHP_VERSION, '5.0.0', '<'))
         {
-            print "[EE] PHP 5.0.0 or greate is required\n";
+            print "[EE] PHP 5.0.0 or greater is required\n";
             return false;
         };
 
@@ -744,14 +767,14 @@ class Tigger
             return false;
         }
 
-        #if (!self::o('no-storage'))
-        #{
-        #    if (!extension_loaded('sqlite'))
-        #    {
-        #        print "[EE] SQLite is required to maintain state. Use -x to disable\n";
-        #        return false;
-        #    }
-        #}
+        if (!self::o('no-storage'))
+        {
+           if (!extension_loaded('sqlite') || !class_exists('SQLiteDatabase'))
+           {
+               print "[EE] SQLite is required to maintain state. Use -x to disable\n";
+               return false;
+           }
+        }
 
         return true;
     }

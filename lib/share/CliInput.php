@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Ben Lake <me@benlake.org>
- * @license http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license GNU Public License v3 (http://opensource.org/licenses/gpl-3.0.html)
  * @copyright Copyright (c) 2011, Ben Lake
  * @link http://benlake.org/projects/show/cliinput
  *
