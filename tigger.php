@@ -56,7 +56,7 @@ If you want Tigger to auto-login to vTiger, create the file ~/.tigger that looks
 like the following:
 
     [login]
-    host=https://vtiger.speedfc.com
+    host=https://<host>
     username=<user>
     access_key=<access key>
 

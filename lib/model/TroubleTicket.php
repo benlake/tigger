@@ -24,7 +24,8 @@
 
 /**
  * Represents a vTiger trouble ticket (HelpDesk module entity) with some of
- * SpeedFC's custom fields defined for accessibility.
+ * custom fields defined for accessibility.
+ * @todo need to make the custom field declaration extensible
  */
 class TroubleTicket
 {
