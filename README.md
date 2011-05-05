@@ -1,7 +1,7 @@
 # Tigger #
 
     AUTHOR: Ben Lake <me@benlake.org>
-    LICENSE: GNU Public License (http://opensource.org/licenses/gpl-license.php)
+    LICENSE: GNU Public License v3 (http://opensource.org/licenses/gpl-3.0.html)
     COPYRIGHT (c) 2011, Ben Lake
 
 Tigger is a PHP CLI application used to monitor tickets in vTiger (the OSS version of SugarCRM). It
