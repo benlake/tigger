@@ -1,0 +1,99 @@
+#!/usr/bin/env php
+<?php
+/**
+ * Tigger, a PHP vTiger cli tool for tracking tickets and entering time
+ * @author Ben Lake <me@benlake.org>
+ * @license GNU Public License v3 (http://opensource.org/licenses/gpl-3.0.html)
+ * @copyright Copyright (c) 2011, Ben Lake
+ * @link https://github.com/benlake/tigger
+ *
+ * This file is part of the Tigger project.
+ *
+ * Tigger is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Tigger is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Tigger.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/**
+ * Build a PHAR file.
+ * @todo build a phing task of this process
+ */
+
+define('BASE_DIR', './build');
+
+error_reporting(E_ALL);ini_set('display_errors', 1);
+
+// check that we can write phars
+if (ini_get('phar.readonly') == '1')
+{
+    print "[EE] you need to set phar.readonly = Off in your php.ini\n";
+    exit(1);
+}
+
+// need to be able to specify the application name and cherry pickable files/dirs
+// to include in phar
+make('tigger', array(
+    'lib',
+    'tigger.php',
+    ));
+
+// =============
+// = Utilities =
+// =============
+
+function make($name, $files = array())
+{
+    $path = BASE_DIR.'/'.$name;
+
+    @unlink($path.'.tar');
+    @unlink($path.'.phar');
+
+    // copy the init script and remove the bang line
+    `cp $path main.php`;
+
+    // use gnutar if available (OSX sed is lame)
+    $exec = 'sed';
+    if (`which gsed` !== null)
+        $exec = 'gsed';
+    `$exec -i '1d' main.php`;
+
+    // use gnutar if available (OSX tar is lame)
+    $exec = 'tar';
+    if (`which gnutar` !== null)
+        $exec = 'gnutar';
+    $files = implode(' ', $files);
+    `$exec --exclude=.svn --exclude=.git* -cf $path.tar main.php $files`;
+
+    `rm main.php`;
+
+    $tarphar = new PharData($path.'.tar');
+    $phar = $tarphar->convertToExecutable(Phar::PHAR); // creates the .phar file
+
+    $phar->setStub("#!/usr/bin/env php
+<?php
+\$MAIN = 'main.php';
+if (in_array('phar', stream_get_wrappers()) && class_exists('Phar', 0))
+{
+    Phar::interceptFileFuncs();
+    set_include_path('phar://'.__FILE__.PATH_SEPARATOR.get_include_path());
+    include 'phar://'.__FILE__.'/'.\$MAIN;
+    return;
+}
+else
+    print \"ERROR: Phar execution not supported\n\";
+
+__HALT_COMPILER();
+");
+
+    unlink($path.'.tar');
+    `chmod +x $path.phar`;
+}

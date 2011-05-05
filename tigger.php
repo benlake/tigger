@@ -43,7 +43,6 @@ Tigger::init();
 if (Tigger::o('debug'))
 {
     error_reporting(E_ALL);
-    ini_set('display_errors', 1);
 }
 
 if (!Conf::loaded())
