@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="tigger" default="dist">
+
+    <!-- snag updates to shared libs -->
+    <!--
+    not using svn externals as svn does not handle single files,
+    and we don't need any svn abilities with these shared libs
+    -->
+    <target name="update">
+
+        <echo msg="fetching CliInput" />
+        <exec command="svn export svn+ssh://pudgy/codebase/toolbox/trunk/lib/CliInput.php@11 lib/share/CliInput.php"
+              checkreturn="true"
+              />
+
+    </target>
+
+    <target name="dist">
+        <echo msg="Nothing to do. Perhaps you meant 'update'." />
+    </target>
+
+</project>
