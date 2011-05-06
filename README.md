@@ -27,7 +27,8 @@ team get through the pain!
 Tigger is really only tested working against vTiger 5.1.0. If you have any additional compatibility
 information please let me know.
 
-## vTiger Patches ##
+## vTiger Patche ##
 
-I had to make a few tweaks to vTiger to fix a bug or two, but I'll need to find those and validate
-them.
+The vTiger 5.1 series had a bug in it that I discovered and patched. See the file _vtiger-5.1-lexer.patch_
+in the root directory. If you do not apply the patch you probably won't get good results when listing
+tickets.
